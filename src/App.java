@@ -1,4 +1,6 @@
+import java.util.List;
 import java.sql.*;
+import java.util.Iterator;
 
 import com.intersystems.jdbc.IRISConnection;
 import com.intersystems.binding.Id;
@@ -30,6 +32,7 @@ public class App {
 	    	  employee._close();
 	    	  employee = null;
 
+        	  // Fetch data via class query
 	    	  ResultSet rs = null;
 	    	  IRISQuery query = Person.query_ByName(irisconnection);
 	          rs=query.execute("A");
@@ -42,10 +45,21 @@ public class App {
 	          pstmt.setInt(1, 30);
 	          rs = pstmt.executeQuery();
 	          while (rs.next()) {
+	        	  // Fetch data via JDBC interface
     	          System.out.println("ID: " + rs.getInt(1) + " Name: " + rs.getString(2) + " Age: " + rs.getInt(3));
-	        	  // If you want to open it.
+
+    	          // If you want to open it as an object.
     	          employee = (Employee)(Employee._open(irisconnection, new Id(rs.getInt(1))));
     	          System.out.println("ID: " + rs.getInt(1) + " Name: " + employee.getName() + " Salary: " + employee.getSalary());
+    	          List listOfFavoriteColors = (List)(employee.getFavoriteColors());
+    	          Iterator iter = listOfFavoriteColors.iterator();
+ 	              System.out.print("  Favorite colors: ");
+    	          while(iter.hasNext()){
+    	             String color = (String) (iter.next());
+    	             System.out.print("  [" + color+"]");
+    	          }
+ 	              System.out.println("");
+    	          
     	          employee._close();
     	       }
 	    	  
